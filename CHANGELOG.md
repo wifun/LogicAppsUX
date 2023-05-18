@@ -1,4 +1,12 @@
 # Logic Apps Designer
+### [2.16.1](https://github.com/Azure/LogicAppsUX/compare/v2.16.0...v2.16.1) (2023-05-18)
+
+
+### Bug Fixes
+
+* **designer:** Allow operations to specify unknown parameters to not be rendered or serialized ([#2401](https://github.com/Azure/LogicAppsUX/issues/2401)) ([8133450](https://github.com/Azure/LogicAppsUX/commit/81334507b944bffbae65bba7c7c1333e7eadb13e))
+* **designer:** Clear preserved value when removing parameters from original view ([#2417](https://github.com/Azure/LogicAppsUX/issues/2417)) ([4aaa797](https://github.com/Azure/LogicAppsUX/commit/4aaa797b3e6229c4b98b396651555c83b41ce457))
+
 ## [2.16.0](https://github.com/Azure/LogicAppsUX/compare/v2.15.25...v2.16.0) (2023-05-17)
 
 
