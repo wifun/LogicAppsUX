@@ -1,4 +1,13 @@
 # Logic Apps Designer
+### [2.15.39](https://github.com/Azure/LogicAppsUX/compare/v2.15.38...v2.15.39) (2023-05-30)
+
+
+### Bug Fixes
+
+* **designer:** Fixed issue where some connection parameter dropdowns were passing name text as value ([#2607](https://github.com/Azure/LogicAppsUX/issues/2607)) ([a084f02](https://github.com/Azure/LogicAppsUX/commit/a084f02f8cd172982a65866498d80926dd2a295e)), closes [#2581](https://github.com/Azure/LogicAppsUX/issues/2581)
+* **designer:** Issue where Filepicker was not showing subfolders  ([#2609](https://github.com/Azure/LogicAppsUX/issues/2609)) ([dadc154](https://github.com/Azure/LogicAppsUX/commit/dadc154a1f440f85acce9721a9b77a2a4c5e5c7a))
+* **designer:** Settings were overridden during action/trigger addition ([#2610](https://github.com/Azure/LogicAppsUX/issues/2610)) ([998be83](https://github.com/Azure/LogicAppsUX/commit/998be833c4f87ee357682a0b1626a51e00f61b9f))
+
 ### [2.15.38](https://github.com/Azure/LogicAppsUX/compare/v2.15.37...v2.15.38) (2023-05-25)
 
 
