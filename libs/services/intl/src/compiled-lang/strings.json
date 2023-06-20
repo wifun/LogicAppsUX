@@ -4537,6 +4537,12 @@
       "value": "Enter a valid JSON."
     }
   ],
+  "V4y707": [
+    {
+      "type": 0,
+      "value": "Invalid connection, please update your connection to load complete details"
+    }
+  ],
   "V5f3ha": [
     {
       "type": 0,

@@ -1,10 +1,13 @@
 import constants from '../../../../common/constants';
 import { useIsOperationMissingConnection } from '../../../../core/state/connection/connectionSelector';
 import { useIsXrmConnectionReferenceMode } from '../../../../core/state/designerOptions/designerOptionsSelectors';
+import { ErrorLevel } from '../../../../core/state/operation/operationMetadataSlice';
+import { useOperationErrorInfo } from '../../../../core/state/operation/operationSelector';
 import { isolateTab } from '../../../../core/state/panel/panelSlice';
 import { useIsConnectionRequired, useOperationInfo } from '../../../../core/state/selectors/actionMetadataSelector';
 import '../../../../core/utils/connectors/connections';
-import { Label, Link, Spinner, SpinnerSize } from '@fluentui/react';
+import { Label, Link, MessageBarType, Spinner, SpinnerSize } from '@fluentui/react';
+import { ErrorBanner } from '@microsoft/designer-ui';
 import { useCallback, useEffect } from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
@@ -29,6 +32,7 @@ export const ConnectionDisplay = (props: ConnectionDisplayProps) => {
   }, [dispatch]);
 
   const operationInfo = useOperationInfo(nodeId);
+  const errorInfo = useOperationErrorInfo(nodeId);
   const requiresConnection = useIsConnectionRequired(operationInfo);
 
   useEffect(() => {
@@ -70,11 +74,16 @@ export const ConnectionDisplay = (props: ConnectionDisplayProps) => {
     );
 
   return (
-    <div className="connection-info">
-      {connectionName && <Label className="label">{connectionDisplayText}</Label>}
-      <Link id="change-connection-button" onClick={openChangeConnectionCallback}>
-        {openChangeConnectionText}
-      </Link>
-    </div>
+    <>
+      {errorInfo?.level === ErrorLevel.Connection ? (
+        <ErrorBanner errorLevel={MessageBarType.severeWarning} errorMessage={errorInfo.message} />
+      ) : null}
+      <div className="connection-info">
+        {connectionName && <Label className="label">{connectionDisplayText}</Label>}
+        <Link id="change-connection-button" onClick={openChangeConnectionCallback}>
+          {openChangeConnectionText}
+        </Link>
+      </div>
+    </>
   );
 };
