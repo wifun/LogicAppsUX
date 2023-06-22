@@ -1,4 +1,16 @@
 # Logic Apps Designer
+### [2.24.7](https://github.com/Azure/LogicAppsUX/compare/v2.24.6...v2.24.7) (2023-06-22)
+
+
+### Features
+
+* **vscode:** Allow custom code functions to be written in VSCode ([#2](https://github.com/Azure/LogicAppsUX/issues/2)… ([#2803](https://github.com/Azure/LogicAppsUX/issues/2803)) ([3b34e0a](https://github.com/Azure/LogicAppsUX/commit/3b34e0a8bfa94a22abbe5ace41cec7b7ce63cf1c)), closes [#2757](https://github.com/Azure/LogicAppsUX/issues/2757) [#2644](https://github.com/Azure/LogicAppsUX/issues/2644) [#2427](https://github.com/Azure/LogicAppsUX/issues/2427)
+
+
+### Bug Fixes
+
+* **vscode:** Modify Workspace to enable 'Invoke Function' flag  ([#2822](https://github.com/Azure/LogicAppsUX/issues/2822)) ([7080aa8](https://github.com/Azure/LogicAppsUX/commit/7080aa84346e1c58aab81e59130d9c23a6afcef8)), closes [#2810](https://github.com/Azure/LogicAppsUX/issues/2810)
+
 ### [2.24.6](https://github.com/Azure/LogicAppsUX/compare/v2.24.5...v2.24.6) (2023-06-09)
 
 
