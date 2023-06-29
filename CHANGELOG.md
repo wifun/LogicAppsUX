@@ -1,4 +1,11 @@
 # Logic Apps Designer
+### [2.36.1](https://github.com/Azure/LogicAppsUX/compare/v2.36.0...v2.36.1) (2023-06-29)
+
+
+### Bug Fixes
+
+* **Designer:** Fixed filtering of cloud capability parameters ([#2852](https://github.com/Azure/LogicAppsUX/issues/2852)) ([cf1d51d](https://github.com/Azure/LogicAppsUX/commit/cf1d51d61da20ea4deced1854eb6f0f56fda894d))
+
 ## [2.36.0](https://github.com/Azure/LogicAppsUX/compare/v2.35.0...v2.36.0) (2023-06-23)
 
 
