@@ -1,4 +1,11 @@
 # Logic Apps Designer
+### [2.38.3](https://github.com/Azure/LogicAppsUX/compare/v2.38.2...v2.38.3) (2023-07-10)
+
+
+### Bug Fixes
+
+* **Designer:** Added state variable for dynamic data load completenes… ([#2941](https://github.com/Azure/LogicAppsUX/issues/2941)) ([3768ba1](https://github.com/Azure/LogicAppsUX/commit/3768ba15c01322d568887f7cf71cc4f08ddb69b2)), closes [#2928](https://github.com/Azure/LogicAppsUX/issues/2928)
+
 ### [2.38.2](https://github.com/Azure/LogicAppsUX/compare/v2.38.1...v2.38.2) (2023-07-07)
 
 
