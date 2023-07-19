@@ -1,4 +1,11 @@
 # Logic Apps Designer
+### [2.45.4](https://github.com/Azure/LogicAppsUX/compare/v2.45.3...v2.45.4) (2023-07-19)
+
+
+### Bug Fixes
+
+* **vscode:** Api version in api hub service ([#2974](https://github.com/Azure/LogicAppsUX/issues/2974)) ([#2998](https://github.com/Azure/LogicAppsUX/issues/2998)) ([85de3d7](https://github.com/Azure/LogicAppsUX/commit/85de3d70ef53336a5ab21d2d2b93d4910302cff9))
+
 ### [2.45.3](https://github.com/Azure/LogicAppsUX/compare/v2.45.2...v2.45.3) (2023-07-17)
 
 
