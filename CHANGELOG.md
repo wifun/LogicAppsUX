@@ -1,4 +1,11 @@
 # Logic Apps Designer
+### [2.48.5](https://github.com/Azure/LogicAppsUX/compare/v2.48.4...v2.48.5) (2023-07-27)
+
+
+### Bug Fixes
+
+* **designer:** Nested loops actions update in monitoring view ([#3050](https://github.com/Azure/LogicAppsUX/issues/3050)) ([#3051](https://github.com/Azure/LogicAppsUX/issues/3051)) ([0882984](https://github.com/Azure/LogicAppsUX/commit/0882984b88087dacf4eb5924ba75fca1a19ca8ae))
+
 ### [2.48.4](https://github.com/Azure/LogicAppsUX/compare/v2.48.3...v2.48.4) (2023-07-26)
 
 
