@@ -45,6 +45,10 @@ export const convertStringToSegments = (value: string, tokensEnabled?: boolean, 
       if (nodeMap && tokensEnabled) {
         const token = nodeMap.get(value.substring(currIndex - 2, newIndex));
         if (token) {
+          // We create empty literals around tokens, so that value insertion is possible
+          if (returnSegments[returnSegments.length-1]?.type === ValueSegmentType.TOKEN) {
+            returnSegments.push({ id: guid(), type: ValueSegmentType.LITERAL, value: '' });
+          }
           returnSegments.push(token);
         }
       }
@@ -52,6 +56,8 @@ export const convertStringToSegments = (value: string, tokensEnabled?: boolean, 
     }
     currIndex++;
   }
-  returnSegments.push({ id: guid(), type: ValueSegmentType.LITERAL, value: value.substring(prevIndex, currIndex) });
+  if (value.substring(prevIndex, currIndex)) {
+    returnSegments.push({ id: guid(), type: ValueSegmentType.LITERAL, value: value.substring(prevIndex, currIndex) });
+  }
   return returnSegments;
 };

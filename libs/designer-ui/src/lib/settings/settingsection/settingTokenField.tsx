@@ -11,6 +11,7 @@ import type { TokenPickerButtonEditorProps } from '../../editor/base/plugins/tok
 import { EditorLanguage } from '../../editor/monaco';
 import { StringEditor } from '../../editor/string';
 import { FloatingActionMenu } from '../../floatingactionmenu';
+import { FloatingActionMenuKind, FloatingActionMenuOutputs } from '../../floatingactionmenu/floatingActionMenuOutputs';
 import { HTMLEditor } from '../../html';
 import type { PickerCallbackHandlers } from '../../picker/filepickereditor';
 import { FilePickerEditor } from '../../picker/filepickereditor';
@@ -287,7 +288,13 @@ const TokenField = ({
         />
       );
     case 'floatingactionmenu': {
-      return (
+      return editorOptions.menuKind === FloatingActionMenuKind.outputs ? (
+        <FloatingActionMenuOutputs
+          supportedTypes={editorOptions?.supportedTypes}
+          initialValue={value}
+          onChange={onValueChange}
+        />
+      ) : (
         <FloatingActionMenu
           supportedTypes={editorOptions?.supportedTypes}
           useStaticInputs={editorOptions?.useStaticInputs}
