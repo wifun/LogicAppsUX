@@ -1,4 +1,11 @@
 # Logic Apps Designer
+### [2.55.7](https://github.com/Azure/LogicAppsUX/compare/v2.55.6...v2.55.7) (2023-08-16)
+
+
+### Bug Fixes
+
+* **designer:** Settings not Deserializing ([#3144](https://github.com/Azure/LogicAppsUX/issues/3144)) ([8c7aa57](https://github.com/Azure/LogicAppsUX/commit/8c7aa572ae01981e5e5629d249417b952b0a020b))
+
 ### [2.55.6](https://github.com/Azure/LogicAppsUX/compare/v2.55.5...v2.55.6) (2023-08-14)
 
 
