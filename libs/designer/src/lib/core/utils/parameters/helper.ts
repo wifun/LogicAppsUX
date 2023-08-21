@@ -1,4 +1,5 @@
 /* eslint-disable no-case-declarations  */
+import { FloatingActionMenuKind } from 'libs/designer-ui/src/lib/floatingactionmenu/floatingActionMenuOutputs';
 import constants from '../../../common/constants';
 import type { ConnectionReference, WorkflowParameter } from '../../../common/models/workflow';
 import type { NodeDataWithOperationMetadata } from '../../actions/bjsworkflow/operationdeserializer';
@@ -426,6 +427,8 @@ export function getParameterEditorProps(
     if (parameterValue.some(isTokenValueSegment)) {
       editor = undefined;
     }
+  } else if (editor === constants.EDITOR.FLOATINGACTIONMENU && editorOptions?.menuKind === FloatingActionMenuKind.outputs) {
+    editorViewModel = toFloatingActionMenuOutputsViewModel(value);
   }
 
   return { editor, editorOptions, editorViewModel, schema };
@@ -740,6 +743,21 @@ function toAuthenticationViewModel(value: any): { type: AuthenticationType; auth
   }
 
   return emptyValue;
+}
+
+// Create FloatingActionMenuOutputs Editor View Model
+function toFloatingActionMenuOutputsViewModel(value: any) {
+  const clonedValue = clone(value);
+  const outputValueMap = clonedValue?.additionalProperties?.outputValueMap;
+  if (outputValueMap) {
+    Object.entries<string>(outputValueMap).forEach(([key, outputValue]) => {
+      outputValueMap[key] = loadParameterValue(convertStringToInputParameter(outputValue));
+    })
+  }
+
+  return {
+    schema: clonedValue
+  };
 }
 
 interface ParameterEditorProps {
@@ -2152,6 +2170,22 @@ function getStringifiedValueFromEditorViewModel(parameter: ParameterInfo, isDefi
       return editorOptions?.isOldFormat
         ? iterateSimpleQueryBuilderEditor(editorViewModel.itemValue, editorViewModel.isRowFormat)
         : JSON.stringify(recurseSerializeCondition(parameter, editorViewModel.items, isDefinitionValue));
+    case constants.EDITOR.FLOATINGACTIONMENU:
+      if (editorOptions?.menuKind !== FloatingActionMenuKind.outputs) {
+        return undefined;
+      }
+
+      const value = clone(editorViewModel.schema);
+      const commonProperties = { supressCasting: parameter.suppressCasting, info: parameter.info };
+      const outputValueMap: Record<string, string | undefined> = {};
+      Object.entries(value.additionalProperties.outputValueMap)
+      .forEach(([key, outputValue]) => {
+        // TODO(WIFUN): Is this the correct way to convert ValueSegment[] to string.
+        outputValueMap[key] = parameterValueToString({ type: constants.SWAGGER.TYPE.STRING, value: outputValue, ...commonProperties } as any, isDefinitionValue)
+      });
+
+      value.additionalProperties.outputValueMap = outputValueMap;
+      return JSON.stringify(value);
     default:
       return undefined;
   }
