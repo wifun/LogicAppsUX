@@ -1,4 +1,11 @@
 # Logic Apps Designer
+### [2.59.2](https://github.com/Azure/LogicAppsUX/compare/v2.59.1...v2.59.2) (2023-08-21)
+
+
+### Bug Fixes
+
+* **designer:** Revert export function for deserialization of tokens ([#3168](https://github.com/Azure/LogicAppsUX/issues/3168)) ([484c297](https://github.com/Azure/LogicAppsUX/commit/484c2971e01f5e958e37a838deedc2b0d8431800)), closes [#3160](https://github.com/Azure/LogicAppsUX/issues/3160) [#3137](https://github.com/Azure/LogicAppsUX/issues/3137)
+
 ### [2.59.1](https://github.com/Azure/LogicAppsUX/compare/v2.59.0...v2.59.1) (2023-08-18)
 
 
