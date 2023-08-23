@@ -1,4 +1,12 @@
 # Logic Apps Designer
+### [2.59.3](https://github.com/Azure/LogicAppsUX/compare/v2.59.2...v2.59.3) (2023-08-23)
+
+
+### Bug Fixes
+
+* **Designer:** Ensure outputs merge only based on isRequestApiConnection FF ([#3180](https://github.com/Azure/LogicAppsUX/issues/3180)) ([6fee400](https://github.com/Azure/LogicAppsUX/commit/6fee400441faca7940cddb3de0166874d2dad16a))
+* **Designer:** Fixing the foatingActionMenu root object for HybridTriggers ([#3148](https://github.com/Azure/LogicAppsUX/issues/3148)) ([7e851a6](https://github.com/Azure/LogicAppsUX/commit/7e851a6d974d1fa88f25a3a1728daad64601be3f))
+
 ### [2.59.2](https://github.com/Azure/LogicAppsUX/compare/v2.59.1...v2.59.2) (2023-08-21)
 
 
