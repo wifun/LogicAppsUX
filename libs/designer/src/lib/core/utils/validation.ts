@@ -289,6 +289,11 @@ export function validateJSONParameter(parameterMetadata: ParameterInfo, paramete
       if (isConditionEditor) {
         validateConditionalEditor(value, errors);
       }
+
+      // TODO(WIFUN): import enum for menukind
+      if (editor === Constants.EDITOR.FLOATINGACTIONMENU && editorOptions?.menuKind === 'outputs') {
+        validateFloatingActionMenuOutputsEditor(parameterMetadata.editorViewModel, errors);
+      }
     } catch {
       if (!parameterHasOnlyTokenBinding(parameterValue)) {
         errors.push(
@@ -302,6 +307,33 @@ export function validateJSONParameter(parameterMetadata: ParameterInfo, paramete
   }
 
   return errors;
+}
+
+// TODO(WIFUN): Import types to remove any
+const validateFloatingActionMenuOutputsEditor = (editorViewModel: any, errors: string[]) => {
+  const intl = getIntl();
+  const schemaKeys = Object.values<any>(editorViewModel?.schema?.properties || {})
+  .filter(config => config?.['x-ms-dynamically-added'])
+  .map(config => config.title?.toLowerCase().replace(' ', '_') || '');
+
+  if (schemaKeys.some(key => key === '')) {
+    errors.push(
+      intl.formatMessage({
+        defaultMessage: 'Output names should not be empty.',
+        description: 'Invalid output names',
+      })
+    );
+  }
+
+  const schemaKeysSet = new Set(schemaKeys);
+  if (schemaKeysSet.size !== schemaKeys.length) {
+    errors.push(
+      intl.formatMessage({
+        defaultMessage: 'Output names should be unique.',
+        description: 'Duplicate output names',
+      })
+    );
+  }
 }
 
 const validateConditionalEditor = (value: string, errors: string[]) => {

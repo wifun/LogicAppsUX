@@ -297,6 +297,7 @@ const TokenField = ({
           BasePlugins={{ tokens: showTokens }}
           tokenPickerButtonProps={tokenpickerButtonProps}
           getTokenPicker={getTokenPicker}
+          hideValidationErrors={hideValidationErrors}
         />
       ) : (
         <FloatingActionMenu

@@ -5,7 +5,7 @@ import type { BasePlugins, ChangeHandler, ChangeState, GetTokenPickerHandler } f
 import { getMenuItemsForDynamicAddedParameters } from '../helper';
 import { KeyCodes } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
-import { ValidationErrorCode, ValidationException } from '@microsoft/utils-logic-apps';
+import { clone, ValidationErrorCode, ValidationException } from '@microsoft/utils-logic-apps';
 import React from 'react';
 import { useIntl } from 'react-intl';
 import { generateDynamicParameterKey, getIconForDynamicallyAddedParameterType } from '../../dynamicallyaddedparameter2/helper';
@@ -17,7 +17,7 @@ import type { TokenPickerButtonEditorProps } from '../../editor/base/plugins/tok
 
 export enum FloatingActionMenuKind {
   inputs = 'inputs',
-  outputs = 'ouputs'
+  outputs = 'outputs'
 }
 
 type FloatingActionMenuItem = {
@@ -56,11 +56,11 @@ type DynamicallyAddedParameterBaseConfig = {
 type DynamicallyAddedParameterConfig = DynamicallyAddedParameterBaseConfig | DynamicallyAddedParameterDateConfig | DynamicallyAddedParameterEmailConfig | DynamicallyAddedParameterFileConfig;
 
 type FloatingActionMenuOutputViewModel = {
-  type: string;
-  properties: Record<string, DynamicallyAddedParameterConfig>;
-  additionalProperties: {
-    outputValueMap: Record<string, ValueSegment[]>;
+  schema: {
+    type: string;
+    properties: Record<string, DynamicallyAddedParameterConfig>;
   }
+  outputValueSegmentsMap: Record<string, ValueSegment[] | undefined>;
 };
 
 type FloatingActionMenuOutputsProps = {
@@ -71,28 +71,76 @@ type FloatingActionMenuOutputsProps = {
   BasePlugins: BasePlugins;
   tokenPickerButtonProps: TokenPickerButtonEditorProps | undefined;
   getTokenPicker: GetTokenPickerHandler;
+  hideValidationErrors: ChangeHandler | undefined;
 }
 
 export const FloatingActionMenuOutputs = (props: FloatingActionMenuOutputsProps): JSX.Element => {
   const intl = useIntl();
-
   const [expanded, { toggle: toggleExpanded }] = useBoolean(false);
 
   if (!props.supportedTypes?.length) {
     throw new ValidationException(ValidationErrorCode.INVALID_PARAMETERS, 'supportedTypes are necessary.');
   }
+  if (!props.editorViewModel?.schema?.properties) {
+    /**
+     * Expects:
+     *   schema: {
+     *       type: 'object',
+     *       properties: {},
+     *   }
+     */
+    throw new ValidationException(ValidationErrorCode.INVALID_PARAMETERS, 'default value needed for floatingActionMenuOutputs.');
+  }
+
   const menuItems = getMenuItemsForDynamicAddedParameters(props.supportedTypes);
 
-  // Set an empty schema object in the value so that the object structure is what Flow-RP expects.
-  // if (props.initialValue.length > 0 && !props.initialValue[0].value) {
-  //   const { onChange } = props;
-  //   if (onChange) {
-  //     const value = getEmptySchemaValueSegmentForInitialization(!!props.useStaticInputs);
-  //     onChange({ value });
-  //   }
-  // }
+  const onDynamicallyAddedParameterTitleChange = (schemaKey: string, newValue: string) => {
+    const { onChange } = props;
+    if (onChange) {
+      const viewModel = clone(props.editorViewModel);
+      viewModel.schema.properties[schemaKey].title = newValue;
+      onChange({ value: props.initialValue, viewModel });
+    }
+  };
 
-  const dynamicParameterProps: DynamicallyAddedParameterProps[] = Object.entries(props.editorViewModel.properties)
+  const onDynamicallyAddedParameterDelete = (schemaKey: string) => {
+    const { onChange } = props;
+    if (onChange) {
+      const viewModel = clone(props.editorViewModel);
+      delete viewModel.schema.properties[schemaKey];
+      delete viewModel.outputValueSegmentsMap[schemaKey];
+      onChange({ value: props.initialValue, viewModel });
+    }
+  };
+
+  const onRenderValueField = (schemaKey: string) => {
+    const placeholder = intl.formatMessage({ defaultMessage: 'Enter a value to respond', description: 'Placeholder for output value field' });
+    const onDynamicallyAddedParameterValueChange = (schemaKey: string, newValue: ValueSegment[]) => {
+      const { onChange } = props;
+      if (onChange) {
+        const viewModel = clone(props.editorViewModel);
+        viewModel.outputValueSegmentsMap[schemaKey] = newValue;
+        onChange({ value: props.initialValue, viewModel });
+      }
+    };
+
+    return (
+      <StringEditor
+          className="msla-setting-token-editor-container"
+          placeholder={placeholder}
+          BasePlugins={props.BasePlugins}
+          readonly={false}
+          initialValue={props.editorViewModel.outputValueSegmentsMap[schemaKey]}
+          tokenPickerButtonProps={props.tokenPickerButtonProps}
+          editorBlur={(newState: ChangeState) => onDynamicallyAddedParameterValueChange(schemaKey, newState.value)}
+          getTokenPicker={props.getTokenPicker}
+          onChange={props.hideValidationErrors}
+          dataAutomationId={`msla-setting-token-editor-floatingActionMenuOutputs-${schemaKey}`}
+        />
+    );
+  }
+
+  const dynamicParameterProps: DynamicallyAddedParameterProps[] = Object.entries(props.editorViewModel.schema.properties)
   .filter(([_key, config]) => {
     return config['x-ms-dynamically-added'];
   })
@@ -106,59 +154,6 @@ export const FloatingActionMenuOutputs = (props: FloatingActionMenuOutputsProps)
       onRenderValueField
     }
   });
-
-  const onDynamicallyAddedParameterTitleChange = (schemaKey: string, newValue: string) => {
-    const { onChange } = props;
-    if (onChange) {
-      const viewModel = {
-        ...props.editorViewModel
-      };
-      viewModel.properties[schemaKey].title = newValue;
-      onChange({ value: props.initialValue, viewModel });
-    }
-  };
-
-  const onDynamicallyAddedParameterDelete = (schemaKey: string) => {
-    const { onChange } = props;
-    if (onChange) {
-      const viewModel = {
-        ...props.editorViewModel
-      };
-      delete viewModel.properties[schemaKey];
-      delete viewModel.additionalProperties.outputValueMap[schemaKey];
-
-      onChange({ value: props.initialValue, viewModel });
-    }
-  };
-
-  const onRenderValueField = (schemaKey: string) => {
-    const placeholder = intl.formatMessage({ defaultMessage: 'Enter a value to respond', description: 'Placeholder for output value field' });
-    const onDynamicallyAddedParameterValueChange = (schemaKey: string, newValue: ValueSegment[]) => {
-      const { onChange } = props;
-      if (onChange) {
-        const viewModel = {
-          ...props.editorViewModel
-        };
-        viewModel.additionalProperties.outputValueMap[schemaKey] = newValue;
-        onChange({ value: props.initialValue, viewModel });
-      }
-    };
-
-    return (
-      <StringEditor
-          className="msla-setting-token-editor-container"
-          placeholder={placeholder}
-          BasePlugins={props.BasePlugins}
-          readonly={false}
-          initialValue={props.editorViewModel.additionalProperties.outputValueMap[schemaKey]}
-          tokenPickerButtonProps={props.tokenPickerButtonProps}
-          // editorBlur={onValueChange}
-          getTokenPicker={props.getTokenPicker}
-          onChange={(newState: ChangeState) => onDynamicallyAddedParameterValueChange(schemaKey, newState.value)}
-          dataAutomationId={`msla-setting-token-editor-floatingActionMenuOutputs-${schemaKey}`}
-        />
-    );
-  }
 
   const toggleExpandedOnKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
     const { keyCode } = e;
@@ -218,13 +213,11 @@ export const FloatingActionMenuOutputs = (props: FloatingActionMenuOutputsProps)
   
       const { onChange } = props;
         if (onChange) {
-          const viewModel = {
-            ...props.editorViewModel
-          };
+          const viewModel = clone(props.editorViewModel);
   
-          const schemaKey = generateDynamicParameterKey(Object.keys(props.editorViewModel.properties), item.type);
+          const schemaKey = generateDynamicParameterKey(Object.keys(viewModel.schema.properties), item.type);
   
-          let format, fileProperties;
+          let format = undefined;
           let type = '';
           switch (item.type) {
             case DynamicallyAddedParameterType.Date:
@@ -237,10 +230,7 @@ export const FloatingActionMenuOutputs = (props: FloatingActionMenuOutputsProps)
               break;
             case DynamicallyAddedParameterType.File:
               type = constants.SWAGGER.TYPE.OBJECT;
-              fileProperties = {
-                contentBytes: { type: constants.SWAGGER.TYPE.STRING, format: constants.SWAGGER.FORMAT.BYTE },
-                name: { type: constants.SWAGGER.TYPE.STRING },
-              };
+              format= constants.SWAGGER.FORMAT.BYTE;
               break;
             case DynamicallyAddedParameterType.Boolean:
               type = constants.SWAGGER.TYPE.BOOLEAN;
@@ -249,11 +239,10 @@ export const FloatingActionMenuOutputs = (props: FloatingActionMenuOutputsProps)
               type = constants.SWAGGER.TYPE.NUMBER;
               break;
           }
-          viewModel.properties[schemaKey] = {
-            format,
+          viewModel.schema.properties[schemaKey] = {
             title: '',
             type,
-            properties: fileProperties,
+            format,
             'x-ms-content-hint': item.type,
             'x-ms-dynamically-added': true,
           };

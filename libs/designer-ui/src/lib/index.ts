@@ -38,6 +38,7 @@ export * from './errorsPanel';
 export * from './eventhandler';
 // export * from './featurefeedback';
 // export * from './floatingactionmenu';
+export { FloatingActionMenuKind } from './floatingactionmenu/floatingActionMenuOutputs';
 export * from './flyout';
 export * from './flyout2';
 // export * from './formfield';

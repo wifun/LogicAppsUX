@@ -13,28 +13,6 @@ export const DynamicallyAddedParameterType = {
 } as const;
 export type DynamicallyAddedParameterTypeType = (typeof DynamicallyAddedParameterType)[keyof typeof DynamicallyAddedParameterType];
 
-export interface IDynamicallyAddedParameterProperties {
-  title: string;
-  type: string;
-  description: string;
-  'x-ms-content-hint': string;
-  'x-ms-dynamically-added'?: boolean;
-  format?: string;
-  properties?: {
-    name?: {
-      type: string;
-    };
-    contentBytes?: {
-      type: string;
-      format: string;
-    };
-  };
-  items?: {
-    enum: string[];
-    type: string;
-  };
-}
-
 export interface DynamicallyAddedParameterProps {
   schemaKey: string;
   icon: string;
@@ -46,12 +24,13 @@ export interface DynamicallyAddedParameterProps {
 
 export const DynamicallyAddedParameter = (props: DynamicallyAddedParameterProps): JSX.Element => {
   const intl = useIntl();
-  const menuButtonTitle = intl.formatMessage({
-    defaultMessage: 'Menu',
-    description: 'Open dynamically added parameter options menu',
-  });
 
   const renderMenuButton = (): JSX.Element => {
+    const menuButtonTitle = intl.formatMessage({
+      defaultMessage: 'Menu',
+      description: 'Open dynamically added parameter options menu',
+    });
+
     const deleteText = intl.formatMessage({
       defaultMessage: 'Delete',
       description: 'Delete dynamic parameter corresponding to this row',
@@ -88,15 +67,15 @@ export const DynamicallyAddedParameter = (props: DynamicallyAddedParameterProps)
     );
   };
 
-  const onTitleChange = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string) => {
-    e.preventDefault();
-    props.onTitleChange(props.schemaKey, newValue || '');
-  };
-
   const renderDynamicParameterContainer = (): JSX.Element => {
     const iconStyle = {
       background: `url('${props.icon}') no-repeat center`,
       backgroundSize: 'contain',
+    };
+
+    const onTitleChange = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string) => {
+      e.preventDefault();
+      props.onTitleChange(props.schemaKey, newValue || '');
     };
 
     return (

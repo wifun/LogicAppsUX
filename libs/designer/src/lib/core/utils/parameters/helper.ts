@@ -1,5 +1,4 @@
 /* eslint-disable no-case-declarations  */
-import { FloatingActionMenuKind } from 'libs/designer-ui/src/lib/floatingactionmenu/floatingActionMenuOutputs';
 import constants from '../../../common/constants';
 import type { ConnectionReference, WorkflowParameter } from '../../../common/models/workflow';
 import type { NodeDataWithOperationMetadata } from '../../actions/bjsworkflow/operationdeserializer';
@@ -150,6 +149,12 @@ import {
 import type { Dispatch } from '@reduxjs/toolkit';
 
 // import { debounce } from 'lodash';
+
+// TODO(WIFUN): Why does export from designer-ui no work?
+export enum FloatingActionMenuKind {
+  inputs = 'inputs',
+  outputs = 'outputs'
+}
 
 export const ParameterBrandColor = '#916F6F';
 export const ParameterIcon =
@@ -748,15 +753,20 @@ function toAuthenticationViewModel(value: any): { type: AuthenticationType; auth
 // Create FloatingActionMenuOutputs Editor View Model
 function toFloatingActionMenuOutputsViewModel(value: any) {
   const clonedValue = clone(value);
+
+  const outputValueSegmentsMap: Record<string, ValueSegment[]> = {};
   const outputValueMap = clonedValue?.additionalProperties?.outputValueMap;
   if (outputValueMap) {
     Object.entries<string>(outputValueMap).forEach(([key, outputValue]) => {
-      outputValueMap[key] = loadParameterValue(convertStringToInputParameter(outputValue));
-    })
+      // TODO(wifun): what do the optional parameters to convertStringToInputParameter mean?
+      outputValueSegmentsMap[key] = loadParameterValue(convertStringToInputParameter(outputValue));
+    });
+    delete clonedValue.additionalProperties.outputValueMap;
   }
 
   return {
-    schema: clonedValue
+    schema: clonedValue,
+    outputValueSegmentsMap
   };
 }
 
@@ -2171,20 +2181,37 @@ function getStringifiedValueFromEditorViewModel(parameter: ParameterInfo, isDefi
         ? iterateSimpleQueryBuilderEditor(editorViewModel.itemValue, editorViewModel.isRowFormat)
         : JSON.stringify(recurseSerializeCondition(parameter, editorViewModel.items, isDefinitionValue));
     case constants.EDITOR.FLOATINGACTIONMENU:
-      if (editorOptions?.menuKind !== FloatingActionMenuKind.outputs) {
+      if (!editorViewModel || editorOptions?.menuKind !== FloatingActionMenuKind.outputs) {
         return undefined;
       }
 
       const value = clone(editorViewModel.schema);
-      const commonProperties = { supressCasting: parameter.suppressCasting, info: parameter.info };
+      // TODO(WIFUN): add types for this function
+      const schemaProperties: Record<string, any> = {};
       const outputValueMap: Record<string, string | undefined> = {};
-      Object.entries(value.additionalProperties.outputValueMap)
-      .forEach(([key, outputValue]) => {
-        // TODO(WIFUN): Is this the correct way to convert ValueSegment[] to string.
-        outputValueMap[key] = parameterValueToString({ type: constants.SWAGGER.TYPE.STRING, value: outputValue, ...commonProperties } as any, isDefinitionValue)
+      const commonProperties = { supressCasting: parameter.suppressCasting, info: parameter.info };
+
+      Object.entries<any>(value.properties)
+      .forEach(([key, config]) => {
+        if (!config['x-ms-dynamically-added']) {
+          schemaProperties[key] = config;
+          return;
+        }
+
+        if (config.title) {
+          const keyFromTitle = config.title.replace(' ', '_');
+          schemaProperties[keyFromTitle] = config;
+
+          const valueSegments = editorViewModel.outputValueSegmentsMap?.[key];
+          if (valueSegments) {
+            // TODO(WIFUN): Is this the correct way to convert ValueSegment[] to string.
+            outputValueMap[keyFromTitle] = parameterValueToString({ type: config.type, value: valueSegments, ...commonProperties } as any, isDefinitionValue);
+          }
+        }
       });
 
-      value.additionalProperties.outputValueMap = outputValueMap;
+      value.properties = schemaProperties;
+      (value.additionalProperties ??= {}).outputValueMap = outputValueMap;
       return JSON.stringify(value);
     default:
       return undefined;
