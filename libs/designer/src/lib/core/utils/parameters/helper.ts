@@ -2188,7 +2188,7 @@ function getStringifiedValueFromEditorViewModel(parameter: ParameterInfo, isDefi
       const value = clone(editorViewModel.schema);
       // TODO(WIFUN): add types for this function
       const schemaProperties: Record<string, any> = {};
-      const outputValueMap: Record<string, string | undefined> = {};
+      const outputValueMap: Record<string, string> = {};
       const commonProperties = { supressCasting: parameter.suppressCasting, info: parameter.info };
 
       Object.entries<any>(value.properties)
@@ -2205,7 +2205,7 @@ function getStringifiedValueFromEditorViewModel(parameter: ParameterInfo, isDefi
           const valueSegments = editorViewModel.outputValueSegmentsMap?.[key];
           if (valueSegments) {
             // TODO(WIFUN): Is this the correct way to convert ValueSegment[] to string.
-            outputValueMap[keyFromTitle] = parameterValueToString({ type: config.type, value: valueSegments, ...commonProperties } as any, isDefinitionValue);
+            outputValueMap[keyFromTitle] = parameterValueToString({ type: config.type, value: valueSegments, ...commonProperties } as any, isDefinitionValue) || '';
           }
         }
       });

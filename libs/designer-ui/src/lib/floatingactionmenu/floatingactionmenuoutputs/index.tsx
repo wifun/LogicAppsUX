@@ -130,7 +130,7 @@ export const FloatingActionMenuOutputs = (props: FloatingActionMenuOutputsProps)
           placeholder={placeholder}
           BasePlugins={props.BasePlugins}
           readonly={false}
-          initialValue={props.editorViewModel.outputValueSegmentsMap[schemaKey]}
+          initialValue={props.editorViewModel.outputValueSegmentsMap[schemaKey] || []}
           tokenPickerButtonProps={props.tokenPickerButtonProps}
           editorBlur={(newState: ChangeState) => onDynamicallyAddedParameterValueChange(schemaKey, newState.value)}
           getTokenPicker={props.getTokenPicker}
