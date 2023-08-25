@@ -60,6 +60,7 @@ import type {
   AuthProps,
   ComboboxItem,
   DictionaryEditorItemProps,
+  FloatingActionMenuOutputViewModel,
   GroupItemProps,
   OutputToken,
   ParameterInfo,
@@ -153,7 +154,7 @@ import type { Dispatch } from '@reduxjs/toolkit';
 // TODO(WIFUN): Why does export from designer-ui no work?
 export enum FloatingActionMenuKind {
   inputs = 'inputs',
-  outputs = 'outputs'
+  outputs = 'outputs',
 }
 
 export const ParameterBrandColor = '#916F6F';
@@ -754,7 +755,7 @@ function toAuthenticationViewModel(value: any): { type: AuthenticationType; auth
 function toFloatingActionMenuOutputsViewModel(value: any) {
   const clonedValue = clone(value);
 
-  const outputValueSegmentsMap: Record<string, ValueSegment[]> = {};
+  const outputValueSegmentsMap: Record<string, ValueSegment[] | undefined> = {};
   const outputValueMap = clonedValue?.additionalProperties?.outputValueMap;
   if (outputValueMap) {
     Object.entries<string>(outputValueMap).forEach(([key, outputValue]) => {
@@ -766,7 +767,7 @@ function toFloatingActionMenuOutputsViewModel(value: any) {
 
   return {
     schema: clonedValue,
-    outputValueSegmentsMap
+    outputValueSegmentsMap,
   };
 }
 
@@ -2185,38 +2186,47 @@ function getStringifiedValueFromEditorViewModel(parameter: ParameterInfo, isDefi
         return undefined;
       }
 
-      const value = clone(editorViewModel.schema);
-      // TODO(WIFUN): add types for this function
-      const schemaProperties: Record<string, any> = {};
-      const outputValueMap: Record<string, string> = {};
-      const commonProperties = { supressCasting: parameter.suppressCasting, info: parameter.info };
-
-      Object.entries<any>(value.properties)
-      .forEach(([key, config]) => {
-        if (!config['x-ms-dynamically-added']) {
-          schemaProperties[key] = config;
-          return;
-        }
-
-        if (config.title) {
-          const keyFromTitle = config.title.replace(' ', '_');
-          schemaProperties[keyFromTitle] = config;
-
-          const valueSegments = editorViewModel.outputValueSegmentsMap?.[key];
-          if (valueSegments) {
-            // TODO(WIFUN): Is this the correct way to convert ValueSegment[] to string.
-            outputValueMap[keyFromTitle] = parameterValueToString({ type: config.type, value: valueSegments, ...commonProperties } as any, isDefinitionValue) || '';
-          }
-        }
-      });
-
-      value.properties = schemaProperties;
-      (value.additionalProperties ??= {}).outputValueMap = outputValueMap;
-      return JSON.stringify(value);
+      return getStringifiedValueFromFloatingActionMenuOutputsViewModel(parameter, isDefinitionValue, editorViewModel);
     default:
       return undefined;
   }
 }
+
+const getStringifiedValueFromFloatingActionMenuOutputsViewModel = (
+  parameter: ParameterInfo,
+  isDefinitionValue: boolean,
+  editorViewModel: FloatingActionMenuOutputViewModel
+): string | undefined => {
+  const value: typeof editorViewModel.schema & { additionalProperties?: { outputValueMap?: Record<string, string> } } = clone(
+    editorViewModel.schema
+  );
+  const schemaProperties: typeof editorViewModel.schema.properties = {};
+  const outputValueMap: Record<string, string> = {};
+  const commonProperties = { supressCasting: parameter.suppressCasting, info: parameter.info };
+
+  Object.entries(value.properties).forEach(([key, config]) => {
+    if (!config['x-ms-dynamically-added']) {
+      schemaProperties[key] = config;
+      return;
+    }
+
+    if (config.title) {
+      const keyFromTitle = config.title.replace(' ', '_');
+      schemaProperties[keyFromTitle] = config;
+
+      const valueSegments = editorViewModel.outputValueSegmentsMap?.[key];
+      if (valueSegments) {
+        // TODO(WIFUN): Is this the correct way to convert ValueSegment[] to string.
+        outputValueMap[keyFromTitle] =
+          parameterValueToString({ type: config.type, value: valueSegments, ...commonProperties } as any, isDefinitionValue) || '';
+      }
+    }
+  });
+
+  value.properties = schemaProperties;
+  (value.additionalProperties ??= {}).outputValueMap = outputValueMap;
+  return JSON.stringify(value);
+};
 
 const iterateSimpleQueryBuilderEditor = (itemValue: ValueSegment[], isRowFormat: boolean): string | undefined => {
   // if it is in advanced mode, we use loadParameterValue to get the value

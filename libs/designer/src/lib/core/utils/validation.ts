@@ -2,7 +2,8 @@ import Constants from '../../common/constants';
 import { getTitleOrSummary } from './openapi/schema';
 import { isParameterRequired, parameterValueToJSONString, recurseSerializeCondition } from './parameters/helper';
 import { isTokenValueSegment } from './parameters/segment';
-import type { ParameterInfo, ValueSegment } from '@microsoft/designer-ui';
+import { FloatingActionMenuKind } from '@microsoft/designer-ui';
+import type { FloatingActionMenuOutputViewModel, ParameterInfo, ValueSegment } from '@microsoft/designer-ui';
 import { getIntl } from '@microsoft/intl-logic-apps';
 import type { Expression, ExpressionLiteral } from '@microsoft/parsers-logic-apps';
 import {
@@ -291,7 +292,7 @@ export function validateJSONParameter(parameterMetadata: ParameterInfo, paramete
       }
 
       // TODO(WIFUN): import enum for menukind
-      if (editor === Constants.EDITOR.FLOATINGACTIONMENU && editorOptions?.menuKind === 'outputs') {
+      if (editor === Constants.EDITOR.FLOATINGACTIONMENU && editorOptions?.menuKind === FloatingActionMenuKind.outputs) {
         validateFloatingActionMenuOutputsEditor(parameterMetadata.editorViewModel, errors);
       }
     } catch {
@@ -309,14 +310,13 @@ export function validateJSONParameter(parameterMetadata: ParameterInfo, paramete
   return errors;
 }
 
-// TODO(WIFUN): Import types to remove any
-const validateFloatingActionMenuOutputsEditor = (editorViewModel: any, errors: string[]) => {
+const validateFloatingActionMenuOutputsEditor = (editorViewModel: FloatingActionMenuOutputViewModel, errors: string[]): void => {
   const intl = getIntl();
-  const schemaKeys = Object.values<any>(editorViewModel?.schema?.properties || {})
-  .filter(config => config?.['x-ms-dynamically-added'])
-  .map(config => config.title?.toLowerCase().replace(' ', '_') || '');
+  const schemaKeys = Object.values(editorViewModel?.schema?.properties || {})
+    .filter((config) => config?.['x-ms-dynamically-added'])
+    .map((config) => config.title?.toLowerCase().replace(' ', '_') || '');
 
-  if (schemaKeys.some(key => key === '')) {
+  if (schemaKeys.some((key) => key === '')) {
     errors.push(
       intl.formatMessage({
         defaultMessage: 'Output names should not be empty.',
@@ -334,7 +334,7 @@ const validateFloatingActionMenuOutputsEditor = (editorViewModel: any, errors: s
       })
     );
   }
-}
+};
 
 const validateConditionalEditor = (value: string, errors: string[]) => {
   const intl = getIntl();

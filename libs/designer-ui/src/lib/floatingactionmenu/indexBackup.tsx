@@ -1,20 +1,20 @@
-import type { DynamicallyAddedParameterProps, DynamicallyAddedParameterTypeType } from '../dynamicallyaddedparameter';
-import { DynamicallyAddedParameter } from '../dynamicallyaddedparameter';
+import type { DynamicallyAddedParameterProps, DynamicallyAddedParameterTypeType } from '../dynamicallyaddedparameterBackup';
+import { DynamicallyAddedParameter } from '../dynamicallyaddedparameterBackup';
 import {
   createDynamicallyAddedParameterProperties,
   deserialize,
   generateDynamicParameterKey,
   getEmptySchemaValueSegmentForInitialization,
   serialize,
-} from '../dynamicallyaddedparameter/helper';
+} from '../dynamicallyaddedparameterBackup/helper';
 import type { ValueSegment } from '../editor';
 import type { ChangeHandler } from '../editor/base';
-import { getMenuItemsForDynamicAddedParameters } from './helper';
 import { KeyCodes } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
 import { ValidationErrorCode, ValidationException, safeSetObjectPropertyValue } from '@microsoft/utils-logic-apps';
 import React from 'react';
 import { useIntl } from 'react-intl';
+import { getMenuItemsForDynamicAddedParameters } from './floatingactionmenubase/helper';
 
 export interface FloatingActionMenuItem {
   type: DynamicallyAddedParameterTypeType;
