@@ -1,4 +1,11 @@
 # Logic Apps Designer
+### [2.59.4](https://github.com/Azure/LogicAppsUX/compare/v2.59.3...v2.59.4) (2023-08-29)
+
+
+### Bug Fixes
+
+* **Designer:** Fixed issue on the initialize variable action ([#3211](https://github.com/Azure/LogicAppsUX/issues/3211)) ([57694d7](https://github.com/Azure/LogicAppsUX/commit/57694d7bba4535a757efbfd5b6cd61cc33078cda))
+
 ### [2.59.3](https://github.com/Azure/LogicAppsUX/compare/v2.59.2...v2.59.3) (2023-08-23)
 
 
